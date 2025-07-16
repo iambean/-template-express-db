@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Users Management</title>
+    <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+    <div class="container">
+        <h1>Users Management</h1>
+        
+        <div class="action-buttons">
+            <button class="btn-primary" onclick="showCreateForm()">Add New User</button>
+            <button class="btn-success" onclick="loadUsers()">Refresh</button>
+        </div>
+        
+        <div id="users-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Age</th>
+                        <th>Gender</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="users-list">
+                    <!-- Users will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div id="create-form" class="form-container">
+            <h3>Add New User</h3>
+            <form id="user-form">
+                <div class="form-group">
+                    <label for="user_name">Name</label>
+                    <input type="text" id="user_name" name="user_name" required />
+                </div>
+                <div class="form-group">
+                    <label for="age">Age</label>
+                    <input type="number" id="age" name="age" min="0" max="100" required />
+                </div>
+                <div class="form-group">
+                    <label for="gender">Gender</label>
+                    <select id="gender" name="gender" required>
+                        <option value="M">Male</option>
+                        <option value="F">Female</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn-success">Save</button>
+                    <button type="button" class="btn-danger" onclick="hideForm()">Cancel</button>
+                </div>
+            </form>
+        </div>
+        
+        <div id="edit-form" class="form-container">
+            <h3>Edit User</h3>
+            <form id="edit-user-form">
+                <input type="hidden" id="edit-id" name="id" />
+                <div class="form-group">
+                    <label for="edit-user_name">Name</label>
+                    <input type="text" id="edit-user_name" name="user_name" required />
+                </div>
+                <div class="form-group">
+                    <label for="edit-age">Age</label>
+                    <input type="number" id="edit-age" name="age" min="0" max="100" required />
+                </div>
+                <div class="form-group">
+                    <label for="edit-gender">Gender</label>
+                    <select id="edit-gender" name="gender" required>
+                        <option value="M">Male</option>
+                        <option value="F">Female</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn-success">Update</button>
+                    <button type="button" class="btn-danger" onclick="hideForm()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="./script.js"></script>
+</body>
+</html>
