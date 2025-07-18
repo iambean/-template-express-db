@@ -45,6 +45,17 @@ npx jest tests/user.test.js
 - 单元测试 mock 了数据库和依赖，集成测试为端到端 HTTP 流程。
 - 测试覆盖率可通过 `--coverage` 参数查看。
 
+### 4. Sequelize 注意事项 (Sequelize Notes)
+- 当字段设置为 `allowNull: false` 但没有 `defaultValue` 时：
+  - 如果 create 时未传值，Sequelize 会在校验阶段直接报错
+  - 这种情况下不会执行 hooks (如 beforeCreate)
+  - 解决方案：为 NOT NULL 字段设置默认值或确保 create 时总是传值
+
+> AI 给我的原始说明：
+  sequelize 在执行 create 时，如果有 NOT NULL 字段且没有默认值，且你没有传值，Sequelize 会在校验阶段直接报错，而不会进入 hooks。
+  这是 Sequelize 的一个“坑”：
+  如果你在模型定义时，某个字段 allowNull: false，但没有 defaultValue，也没有在 create 时传值，Sequelize 会先校验字段，校验不通过直接抛错，不会执行 hooks。
+
 ---
 
 如需补充其它模块测试或有疑问，请联系维护者。
@@ -112,4 +123,4 @@ npx jest tests/user.test.js
   - Or, write integration tests in .cjs (CommonJS) and keep business code in ESM.
 - See above for best practices and migration suggestions.
 
---- 
+---

@@ -12,7 +12,8 @@ export default (sequelize) => {
     user_id: {
       type: DataTypes.STRING,
       allowNull: false,
-      //! 一定要设置一个默认值，这是Sequelize的坑，详见mark.md。
+      //! 必须设置默认值，否则当allowNull: false且未传值时，Sequelize会在校验阶段直接报错且不会执行hooks。
+      //! 详见README.md中的"Sequelize注意事项"部分。
       defaultValue: '', 
       unique: true
     },
@@ -46,6 +47,7 @@ export default (sequelize) => {
     tableName: 'users',
     timestamps: true,
     hooks: {
+      // 当前置的字段校验失败时，beforeCreate的hooks不会被执行
       beforeCreate: async (user, options) => {
         // 自动生成唯一 user_id
         let unique = false;

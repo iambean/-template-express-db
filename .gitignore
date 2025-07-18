@@ -1,6 +1,9 @@
 node_modules/
+.DS_Store
+
 # 本地SQLite数据库文件
 db/
+
 # 环境变量文件, 仅保留示例文件
 .env/*
 !.env/.env.example
