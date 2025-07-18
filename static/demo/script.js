@@ -1,7 +1,9 @@
+const $id = id=> document.getElementById(id);
+
 document.addEventListener('DOMContentLoaded', loadUsers);
 
-document.getElementById('user-form').addEventListener('submit', createUser);
-document.getElementById('edit-user-form').addEventListener('submit', updateUser);
+$id('user-form').addEventListener('submit', createUser);
+$id('edit-user-form').addEventListener('submit', updateUser);
 
 function loadUsers() {
     console.log('Loading users...');
@@ -21,18 +23,19 @@ function loadUsers() {
 }
 
 function renderUsers(users) {
-    const tbody = document.getElementById('users-list');
+    const tbody = $id('users-list');
     tbody.innerHTML = '';
 
     users.forEach(user => {
         const tr = document.createElement('tr');
+        const userString = encodeURIComponent(JSON.stringify(user));
         tr.innerHTML = `
             <td>${user.id}</td>
             <td>${user.user_name}</td>
             <td>${user.age}</td>
             <td>${user.gender}</td>
             <td>
-                <button class="btn-primary" onclick="showEditForm(${user.id})">Edit</button>
+                <button class="btn-primary" onclick="showEditForm('${userString}')">Edit</button>
                 <button class="btn-danger" onclick="deleteUser(${user.id})">Delete</button>
             </td>
         `;
@@ -41,43 +44,34 @@ function renderUsers(users) {
 }
 
 function showCreateForm() {
-    document.getElementById('edit-form').style.display = 'none';
-    document.getElementById('create-form').style.display = 'block';
-    document.getElementById('user-form').reset();
+    $id('edit-form').style.display = 'none';
+    $id('create-form').style.display = 'block';
+    $id('user-form').reset();
 }
 
-function showEditForm(userId) {
-    // TODO: Implement AJAX call to fetch user data
-    console.log('Editing user with ID:', userId);
+function showEditForm(userString) {
+    const { id, user_name, age, gender } = JSON.parse(decodeURIComponent(userString));
 
-    // Mock data for demonstration
-    const mockUser = { 
-        id: userId, 
-        user_name: 'John Doe', 
-        age: 30, 
-        gender: 'M' 
-    };
+    $id('edit-id').value = id;
+    $id('edit-name').value = user_name;
+    $id('edit-age').value = age;
+    $id('edit-gender').value = gender;
 
-    document.getElementById('edit-id').value = mockUser.id;
-    document.getElementById('edit-name').value = mockUser.name;
-    document.getElementById('edit-email').value = mockUser.email;
-    document.getElementById('edit-role').value = mockUser.role;
-
-    document.getElementById('create-form').style.display = 'none';
-    document.getElementById('edit-form').style.display = 'block';
+    $id('create-form').style.display = 'none';
+    $id('edit-form').style.display = 'block';
 }
 
 function hideForm() {
-    document.getElementById('create-form').style.display = 'none';
-    document.getElementById('edit-form').style.display = 'none';
+    $id('create-form').style.display = 'none';
+    $id('edit-form').style.display = 'none';
 }
 
 function createUser(e) {
     e.preventDefault();
     const userData = {
-        user_name: document.getElementById('user_name').value,
-        age: document.getElementById('age').value,
-        gender: document.getElementById('gender').value
+        user_name: $id('user_name').value,
+        age: $id('age').value,
+        gender: $id('gender').value
     };
 
     fetch('/api/users', {
@@ -106,10 +100,10 @@ function createUser(e) {
 function updateUser(e) {
     e.preventDefault();
     const userData = {
-        id: document.getElementById('edit-id').value,
-        user_name: document.getElementById('edit-user_name').value,
-        age: document.getElementById('edit-age').value,
-        gender: document.getElementById('edit-gender').value
+        id: $id('edit-id').value,
+        user_name: $id('edit-name').value,
+        age: $id('edit-age').value,
+        gender: $id('edit-gender').value
     };
 
     fetch(`/api/users/${userData.id}`, {

@@ -42,7 +42,6 @@ export default class SQLiteAdapter extends DBAdapter {
   async create(table, data) {
     // const model = this.sequelize.models[table];
     const model = this.models[table];
-    console.log('xxx:', model.constructor.name);
     console.log('UserModel.create 用的 model:', model, model.options.hooks);
     return await model.create(data);
   }
@@ -88,8 +87,7 @@ export default class SQLiteAdapter extends DBAdapter {
   getModel(name) {
     const model = this.models[name];
     if (model) {
-      // console.log(`获取模型: ${name}`, model);
-      console.log('getModel:', name, model, model?.options?.hooks);
+      // console.log('getModel:', name, model, model?.options?.hooks);
       return model;
     }else{
       throw new Error(`Model ${name} does not exist`);

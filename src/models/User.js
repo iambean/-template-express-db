@@ -20,7 +20,7 @@ export default (sequelize) => {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        len: [3, 20]
+        len: [2, 20]
       }
     },
     age: {
@@ -47,7 +47,6 @@ export default (sequelize) => {
     timestamps: true,
     hooks: {
       beforeCreate: async (user, options) => {
-        // console.log('beforeCreate钩子:', user, options);
         // 自动生成唯一 user_id
         let unique = false;
         while (!unique) {
@@ -59,12 +58,10 @@ export default (sequelize) => {
           }
         }
       },
-      afterFind: async (users, options) => {
-        // console.log('afterFind钩子:', users, options);
-        users.forEach(u =>{
-          u.user_name = u.user_name.toUpperCase();
-        });
-      }
+      beforeUpdate: async (user) => {
+        console.log('before Update user ::::::', user)
+        // delete user.id;
+      },
     }
   });
   console.log('User model defined:', User);
