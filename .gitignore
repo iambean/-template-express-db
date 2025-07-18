@@ -1,2 +1,9 @@
-node_modules
-db
+node_modules/
+# 本地SQLite数据库文件
+db/
+# 环境变量文件, 仅保留示例文件
+.env/*
+!.env/.env.example
+
+# 测试报告
+coverage/
