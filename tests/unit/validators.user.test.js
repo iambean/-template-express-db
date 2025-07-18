@@ -46,4 +46,4 @@ describe('userUpdateSchema', () => {
     const { error } = userUpdateSchema.validate(data);
     expect(error).toBeUndefined();
   });
-}); 
+});

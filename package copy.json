@@ -4,14 +4,40 @@
   "description": "ExpressJS项目模板",
   "main": "index.js",
   "type": "module",
+  "babel": {
+    "presets": [
+      ["@babel/preset-env", {"modules": "commonjs"}]
+    ],
+    "plugins": [
+      "@babel/plugin-transform-modules-commonjs"
+    ]
+  },
   "scripts": {
     "start:dev": "NODE_ENV=development node src/index.js",
     "start:test": "NODE_ENV=test node src/index.js",
     "start:prod": "NODE_ENV=production node src/index.js",
     "test": "npx jest",
     "test:unit": "npx jest tests/unit --coverage | cat",
-    "test:integration": "npx jest tests/integration --coverage | cat",
+    "test:integration": "npx jest tests/user.test.js --coverage | cat",
+    "jest": {
+      "transform": {},
+      "testEnvironment": "node",
+      "extensionsToTreatAsEsm": [
+        ".js"
+      ],
+      "transformIgnorePatterns": [],
+      "moduleFileExtensions": ["js", "json", "jsx", "node"],
+      "testMatch": ["**/tests/**/*.test.js"]
+    },
     "type": "module",
+  "babel": {
+    "presets": [
+      ["@babel/preset-env", {"modules": "commonjs"}]
+    ],
+    "plugins": [
+      "@babel/plugin-transform-modules-commonjs"
+    ]
+  },
     "lint": "eslint ."
   },
   "dependencies": {

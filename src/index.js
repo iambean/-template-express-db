@@ -12,8 +12,10 @@ import userRoutes from './routes/userRoutes.js';
 
 import dotenv from 'dotenv';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const envFile = path.join(__dirname, `../.env.${process.env.NODE_ENV}`);
+// const __dirname = path.dirname(__filename, fileURLToPath(import.meta.url));
+// const envFile = path.join(__dirname, `../.env.${process.env.NODE_ENV}`);
+const envFile = path.join(process.cwd(), `.env/.env.${process.env.NODE_ENV}`);
+console.log('envFile:', envFile);
 // Load environment variables from .env file based on the environment
 dotenv.config({ path: envFile });
 

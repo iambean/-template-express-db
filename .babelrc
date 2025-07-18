@@ -1,8 +1,8 @@
 {
   "presets": [
-    ["@babel/preset-env", {"targets": {"node": "current"}}]
+    ["@babel/preset-env", {"modules": "commonjs"}]
   ],
   "plugins": [
-    ["@babel/plugin-transform-modules-commonjs", {"importInterop": "node"}]
+    "@babel/plugin-transform-modules-commonjs"
   ]
 }
