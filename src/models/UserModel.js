@@ -3,19 +3,23 @@ export default class UserModel {
     this.dbAdapter = dbAdapter;
   }
 
+  getModel() {
+    return this.dbAdapter.getModel('User');
+  }
+
   create(data) {
-    return this.dbAdapter.getModel('User').create(data);
+    return this.getModel().create(data);
   }
 
   read(filter) {
-    return this.dbAdapter.getModel('User').findAll({ where: filter });
+    return this.getModel().findAll({ where: filter });
   }
 
   update(id, data) {
-    return this.dbAdapter.getModel('User').update(data, { where: { id } });
+    return this.getModel().update(data, { where: { id } });
   }
 
   delete(id) {
-    return this.dbAdapter.getModel('User').destroy({ where: { id } });
+    return this.getModel().destroy({ where: { id } });
   }
 }

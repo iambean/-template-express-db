@@ -72,3 +72,6 @@ const { SERVER_PORT = 3000 } = process.env;
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection:', reason);
 });
+
+// 为了集成测试，在运行时导出app给测试套件
+export default app;
