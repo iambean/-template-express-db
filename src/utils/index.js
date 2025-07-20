@@ -9,3 +9,6 @@ export function generateRandomId () {
   }
   return result;
 }
+
+// 导出响应工具类
+export { ResponseHelper } from './responseHelper.js';

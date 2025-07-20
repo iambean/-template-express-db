@@ -1,6 +1,7 @@
 import Joi from 'joi';
 import UserModel from '../models/UserModel.js';
 import { ERROR_TYPES } from '../consts.js';
+import { ResponseHelper } from '../utils/responseHelper.js';
 
 export default class UserController {
   constructor(dbAdapter) {
@@ -19,7 +20,7 @@ export default class UserController {
         return next(error);
       } else{
         const user = await this.userModel.create(req.body);
-        res.status(201).json(user);
+        ResponseHelper.sendSuccess(res, user, '用户创建成功', 201);
       }
     } catch (err) {
       next(err);
@@ -30,11 +31,11 @@ export default class UserController {
     try {
       const user = await this.userModel.read({ id: req.params.id });
       if (!user || user.length === 0) {
-        const error = new Error('用户不存在');
+        const error = new Error(`你查找的 user id '${req.params.id}'不存在，请检查。`);
         error.name = ERROR_TYPES.NOT_EXIST_ERROR;
         return next(error);
       } else{
-        res.status(200).json(user[0]);
+        ResponseHelper.sendSuccess(res, user[0], '查询成功');
       }
     } catch (err) {
       next(err);
@@ -56,14 +57,11 @@ export default class UserController {
       const result = await this.userModel.update(req.params.id, req.body);
       console.log('更新结果:', result);
       if (result[0] === 0) {
-        const error = new Error('用户不存在');
+        const error = new Error(`你查找的 user id '${req.params.id}'不存在，请检查。`);
         error.name = ERROR_TYPES.NOT_EXIST_ERROR;
-        if (error) {
-          return next(error);
-        } 
-        
+        return next(error);
       }
-      res.status(200).json({ message: '更新成功' });
+      ResponseHelper.sendSuccess(res, null, '更新成功');
     } catch (err) {
       return next(err);
     }
@@ -73,11 +71,11 @@ export default class UserController {
     try {
       const result = await this.userModel.delete(req.params.id);
       if (result === 0) {
-        const error = new Error('用户不存在');
+        const error = new Error(`你查找的 user id '${req.params.id}'不存在，请检查。`);
         error.name = ERROR_TYPES.NOT_EXIST_ERROR;
         return next(error);
       } else {
-        res.status(200).json({ message: '删除成功' });
+        ResponseHelper.sendSuccess(res, null, '删除成功');
       }
     } catch (err) {
       next(err);
@@ -87,7 +85,7 @@ export default class UserController {
   async listUsers(req, res, next) {
     try {
       const users = await this.userModel.read({});
-      res.status(200).json(users);
+      ResponseHelper.sendSuccess(res, users, '查询成功');
     } catch (err) {
       next(err);
     }

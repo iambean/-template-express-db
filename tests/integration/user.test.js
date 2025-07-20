@@ -11,20 +11,32 @@ describe('User API', () => {
       .post('/api/users')
       .send({ user_name: 'testuser', age: 25, gender: 'F' });
     expect(res.statusCode).toEqual(201);
-    expect(res.body).toHaveProperty('id');
-    userId = res.body.id;
+    expect(res.body).toEqual({
+      error: null,
+      message: '用户创建成功',
+      data: expect.objectContaining({ id: expect.any(Number) })
+    });
+    userId = res.body.data.id;
   });
 
   it('should get all users', async () => {
     const res = await request(app).get('/api/users');
     expect(res.statusCode).toEqual(200);
-    expect(Array.isArray(res.body)).toBeTruthy();
+    expect(res.body).toEqual({
+      error: null,
+      message: '查询成功',
+      data: expect.any(Array)
+    });
   });
 
   it('should get a single user', async () => {
     const res = await request(app).get(`/api/users/${userId}`);
     expect(res.statusCode).toEqual(200);
-    expect(res.body).toHaveProperty('id', userId);
+    expect(res.body).toEqual({
+      error: null,
+      message: '查询成功',
+      data: expect.objectContaining({ id: userId })
+    });
   });
 
   it('should update a user', async () => {
@@ -32,18 +44,31 @@ describe('User API', () => {
       .put(`/api/users/${userId}`)
       .send({ user_name: 'updated', age: 46, gender: 'M' });
     expect(res.statusCode).toEqual(200);
-    expect(res.body).toHaveProperty('message', '更新成功');
+    expect(res.body).toEqual({
+      error: null,
+      message: '更新成功',
+      data: null
+    });
   });
 
   it('should delete a user', async () => {
     const res = await request(app).delete(`/api/users/${userId}`);
     expect(res.statusCode).toEqual(200);
-    expect(res.body).toHaveProperty('message', '删除成功');
+    expect(res.body).toEqual({
+      error: null,
+      message: '删除成功',
+      data: null
+    });
   });
 
   it('should return 404 when getting deleted user', async () => {
     const res = await request(app).get(`/api/users/${userId}`);
     expect(res.statusCode).toEqual(404);
+    expect(res.body).toEqual({
+      error: 'NotExistError',
+      message: `你查找的 user id '${userId}'不存在，请检查。`,
+      data: {}
+    });
   });
 
   it('should fail to create user with missing user_name', async () => {
@@ -51,6 +76,11 @@ describe('User API', () => {
       .post('/api/users')
       .send({ age: 20 });
     expect(res.statusCode).toBe(400);
+    expect(res.body).toEqual({
+      error: 'ValidationError',
+      message: '"user_name" is required',
+      data: {}
+    });
   });
 
   it('should fail to create user with short user_name', async () => {
@@ -58,6 +88,11 @@ describe('User API', () => {
       .post('/api/users')
       .send({ user_name: 'a', age: 20 });
     expect(res.statusCode).toBe(400);
+    expect(res.body).toEqual({
+      error: 'ValidationError',
+      message: '"user_name" length must be at least 2 characters long',
+      data: {}
+    });
   });
 
   it('should fail to create user with invalid age', async () => {
@@ -65,6 +100,11 @@ describe('User API', () => {
       .post('/api/users')
       .send({ user_name: 'abc', age: 200 });
     expect(res.statusCode).toBe(400);
+    expect(res.body).toEqual({
+      error: 'ValidationError',
+      message: '"age" must be less than or equal to 100',
+      data: {}
+    });
   });
 
   it('should fail to create user with invalid gender', async () => {
@@ -72,6 +112,11 @@ describe('User API', () => {
       .post('/api/users')
       .send({ user_name: 'abc', age: 20, gender: 'X' });
     expect(res.statusCode).toBe(400);
+    expect(res.body).toEqual({
+      error: 'ValidationError',
+      message: '"gender" must be one of [M, F]',
+      data: {}
+    });
   });
 
   it('should fail to update user with invalid age', async () => {
@@ -79,11 +124,16 @@ describe('User API', () => {
     const createRes = await request(app)
       .post('/api/users')
       .send({ user_name: 'updateTest', age: 20 });
-    const id = createRes.body.id;
+    const id = createRes.body.data.id;
     const res = await request(app)
       .put(`/api/users/${id}`)
       .send({ age: 200 });
     expect(res.statusCode).toBe(400);
+    expect(res.body).toEqual({
+      error: 'ValidationError',
+      message: '"age" must be less than or equal to 100',
+      data: {}
+    });
   });
 
   it('should allow update with unknown fields', async () => {
@@ -91,13 +141,16 @@ describe('User API', () => {
     const createRes = await request(app)
       .post('/api/users')
       .send({ user_name: 'updateTest2', age: 20, gender: 'M' });
-    const id = createRes.body.id;
+    const id = createRes.body.data.id;
     const res = await request(app)
       .put(`/api/users/${id}`)
       .send({ foo: 'bar' });
     expect(res.statusCode).toBe(422); // 422 Unprocessable Entity
-    // expect(res.body).toHaveProperty('message', '"foo" is not allowed');
-    expect(res.body).toEqual({ error: { message: '"foo" is not allowed' } });
+    expect(res.body).toEqual({
+      error: 'ValidationError',
+      message: '"foo" is not allowed',
+      data: {}
+    });
   });
 
   it('should return 404 when updating non-existent user', async () => {
@@ -105,12 +158,22 @@ describe('User API', () => {
       .put('/api/users/999999')
       .send({ user_name: 'notfound' });
     expect(res.statusCode).toBe(404);
+    expect(res.body).toEqual({
+      error: 'NotExistError',
+      message: "你查找的 user id '999999'不存在，请检查。",
+      data: {}
+    });
   });
 
   it('should return 404 when deleting non-existent user', async () => {
     const res = await request(app)
       .delete('/api/users/999999');
     expect(res.statusCode).toBe(404);
+    expect(res.body).toEqual({
+      error: 'NotExistError',
+      message: "你查找的 user id '999999'不存在，请检查。",
+      data: {}
+    });
   });
 
   it('should return 400 for invalid id format', async () => {
@@ -118,6 +181,9 @@ describe('User API', () => {
       .get('/api/users/invalid_id');
     // 可能是 400 或 404，取决于实现
     expect([400, 404]).toContain(res.statusCode);
+    expect(res.body).toHaveProperty('error');
+    expect(res.body).toHaveProperty('message');
+    expect(res.body).toHaveProperty('data');
   });
 
   it('should handle concurrent create requests', async () => {
@@ -129,6 +195,11 @@ describe('User API', () => {
     const responses = await Promise.all(requests);
     responses.forEach(res => {
       expect(res.statusCode).toBe(201);
+      expect(res.body).toEqual({
+        error: null,
+        message: '用户创建成功',
+        data: expect.objectContaining({ id: expect.any(Number) })
+      });
     });
   });
 
@@ -136,7 +207,7 @@ describe('User API', () => {
     const createRes = await request(app)
       .post('/api/users')
       .send({ user_name: 'concurrentUpdate', age: 20 });
-    const id = createRes.body.id;
+    const id = createRes.body.data.id;
     
     const requests = Array(5).fill().map(() => 
       request(app)
@@ -146,6 +217,11 @@ describe('User API', () => {
     const responses = await Promise.all(requests);
     responses.forEach(res => {
       expect(res.statusCode).toBe(200);
+      expect(res.body).toEqual({
+        error: null,
+        message: '更新成功',
+        data: null
+      });
     });
   });
 
@@ -163,12 +239,12 @@ describe('User API', () => {
   it('should clean up test data', async () => {
     const users = await request(app).get('/api/users');
     await Promise.all(
-      users.body.map(user => 
+      users.body.data.map(user => 
         request(app).delete(`/api/users/${user.id}`)
       )
     );
     const emptyRes = await request(app).get('/api/users');
-    expect(emptyRes.body.length).toBe(0);
+    expect(emptyRes.body.data.length).toBe(0);
   });
 
   afterAll(async () => {
