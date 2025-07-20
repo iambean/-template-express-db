@@ -40,24 +40,4 @@ export default (app) => {
   
   // URL编码解析
   app.use(express.urlencoded({ extended: true }));
-  
-  // FIXME:错误处理中间件，暂时移动到主入口 src/index.js
-  // app.use((err, req, res, next) => {
-  //   let statusCode = 500;
-  //   console.log('集中错误处理中间件', err.constructor.name, err.isJoi);
-  //   if (err.isJoi || err instanceof Joi.ValidationError) {
-  //     statusCode = 400;
-  //   } else if (err.name === 'AuthenticationError') {
-  //     statusCode = 401;
-  //   } else if (err.name === 'NotExistError') {
-  //     statusCode = 404;
-  //   }
-    
-  //   res.status(statusCode).json({
-  //     error: {
-  //       message: err.message,
-  //       ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
-  //     }
-  //   });
-  // });
 };

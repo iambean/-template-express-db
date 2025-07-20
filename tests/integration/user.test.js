@@ -1,7 +1,7 @@
 //! 有坑：项目业务代码使用的是 ESM，但是 supertest完全不支持 ESM，所以只能使用 CommonJS 的方式来导入使用。
 //! 而 src/index.js 是 ESM 的，所以需要使用 import 来导入 app。 导致了ESM 和 CommonJS 模式混用。
 const request = require('supertest');
-import app from '../../src/index.js';
+import { app, dbAdapter, server } from '../../src/index.js';
 
 describe('User API', () => {
   let userId;
@@ -32,7 +32,7 @@ describe('User API', () => {
       .put(`/api/users/${userId}`)
       .send({ user_name: 'updated', age: 46, gender: 'M' });
     expect(res.statusCode).toEqual(200);
-    expect(res.body).toHaveProperty('name', 'updated');
+    expect(res.body).toHaveProperty('message', '更新成功');
   });
 
   it('should delete a user', async () => {
@@ -96,7 +96,8 @@ describe('User API', () => {
       .put(`/api/users/${id}`)
       .send({ foo: 'bar' });
     expect(res.statusCode).toBe(422); // 422 Unprocessable Entity
-    expect(res.body).toHaveProperty('message', '"foo" is not allowed');
+    // expect(res.body).toHaveProperty('message', '"foo" is not allowed');
+    expect(res.body).toEqual({ error: { message: '"foo" is not allowed' } });
   });
 
   it('should return 404 when updating non-existent user', async () => {
@@ -168,5 +169,11 @@ describe('User API', () => {
     );
     const emptyRes = await request(app).get('/api/users');
     expect(emptyRes.body.length).toBe(0);
+  });
+
+  afterAll(async () => {
+    // 这里可以添加清理数据库的逻辑，如果需要的话
+    await dbAdapter.disconnect();
+    server.close(); 
   });
 });

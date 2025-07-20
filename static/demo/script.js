@@ -99,14 +99,19 @@ function createUser(e) {
 
 function updateUser(e) {
     e.preventDefault();
+    const userId = $id('edit-id').value;
+    if (!userId) {
+        alert('User ID is required for update.');
+        return;
+    }
     const userData = {
-        id: $id('edit-id').value,
+        // id: $id('edit-id').value,
         user_name: $id('edit-name').value,
         age: $id('edit-age').value,
         gender: $id('edit-gender').value
     };
 
-    fetch(`/api/users/${userData.id}`, {
+    fetch(`/api/users/${userId}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',

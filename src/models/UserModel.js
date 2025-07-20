@@ -7,19 +7,23 @@ export default class UserModel {
     return this.dbAdapter.getModel('User');
   }
 
-  create(data) {
-    return this.getModel().create(data);
+  async create(data) {
+    const user = await this.getModel().create(data);
+    return user;
   }
 
-  read(filter) {
-    return this.getModel().findAll({ where: filter });
+  async read(filter) {
+    const users = await this.getModel().findAll({ where: filter });
+    return users;
   }
 
-  update(id, data) {
-    return this.getModel().update(data, { where: { id } });
+  async update(id, data) {
+    const result = await this.getModel().update(data, { where: { id } });
+    return result;
   }
 
-  delete(id) {
-    return this.getModel().destroy({ where: { id } });
+  async delete(id) {
+    const result = await this.getModel().destroy({ where: { id } });
+    return result; 
   }
 }

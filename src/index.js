@@ -41,11 +41,12 @@ app.use('/api/users', userRoutes(dbAdapter));
 app.use(errorHandler);
 
 const { SERVER_PORT = 3000 } = process.env;
+let server = null;
 
 (async ()=>{
   await dbAdapter.connect();
   // console.log('数据库连接已建立，应用程序即将启动。',dbAdapter);
-  app.listen(SERVER_PORT, async () => {
+  server = app.listen(SERVER_PORT, async () => {
     console.log(`Server running on http://localhost:${SERVER_PORT}`);
     if(process.env.NODE_ENV === "development"){
       console.log(`demo url: http://localhost:${SERVER_PORT}/demo`);
@@ -58,4 +59,8 @@ process.on('unhandledRejection', (reason, promise) => {
 });
 
 // 为了集成测试，在运行时导出app给测试套件
-export default app;
+export {
+  dbAdapter,
+  app,
+  server,
+}
