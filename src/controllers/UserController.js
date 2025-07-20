@@ -1,7 +1,5 @@
 import Joi from 'joi';
 import UserModel from '../models/UserModel.js';
-// import { userCreateSchema, userUpdateSchema } from '../validators/user.js';
-
 
 export default class UserController {
   constructor(dbAdapter) {
@@ -11,19 +9,17 @@ export default class UserController {
   async createUser(req, res, next) {
     try {
       const schema = Joi.object({
-        // FIXME: 这里应该是不校验，而不是设置为可选
-        // id: Joi.any().optional(),
         user_name: Joi.string().min(2).max(20).required(),
         age: Joi.number().integer().min(0).max(100),
         gender: Joi.string().valid('M', 'F')
-      });
+      }).unknown(true);// 允许未知字段
       const { error } = schema.validate(req.body);
-      // if (error) throw error;
       if (error) {
         return next(error);
-      } 
-      const user = await this.userModel.create(req.body);
-      res.status(201).json(user);
+      } else{
+        const user = await this.userModel.create(req.body);
+        res.status(201).json(user);
+      }
     } catch (err) {
       next(err);
     }
@@ -35,10 +31,10 @@ export default class UserController {
       if (!user || user.length === 0) {
         const error = new Error('用户不存在');
         error.name = 'NotExistError';
-        // throw error;
         return next(error);
+      } else{
+        res.status(200).json(user[0]);
       }
-      res.status(200).json(user[0]);
     } catch (err) {
       next(err);
     }
@@ -47,14 +43,11 @@ export default class UserController {
   async updateUser(req, res, next) {
     try {
       const schema = Joi.object({
-        // FIXME: 这里应该是不校验，而不是设置为可选
-        // id: Joi.any().optional(),
         user_name: Joi.string().min(2).max(20),
         age: Joi.number().integer().min(0).max(100),
         gender: Joi.string().valid('M', 'F')
       }).unknown(true);// 允许未知字段
       const { error } = schema.validate(req.body);
-      // console.log('update error:', error, req.body);
       if (error) {
         return next(error);
       } 
@@ -63,7 +56,6 @@ export default class UserController {
       if (result[0] === 0) {
         const error = new Error('用户不存在');
         error.name = 'NotExistError';
-        // throw error;
         if (error) {
           return next(error);
         } 
@@ -80,10 +72,10 @@ export default class UserController {
       if (result === 0) {
         const error = new Error('用户不存在');
         error.name = 'NotExistError';
-        // throw error;
         return next(error);
+      } else {
+        res.status(200).json({ message: '删除成功' });
       }
-      res.status(200).json({ message: '删除成功' });
     } catch (err) {
       next(err);
     }

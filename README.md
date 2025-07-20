@@ -46,6 +46,7 @@ npx jest tests/user.test.js
 - 测试覆盖率可通过 `--coverage` 参数查看。
 
 ### 4. 使用`Sequelize`作为 `db orm` 遇到的坑
+- 因为 Joi 规则校验在 Controller层，而 Sequelize 的ModelDefine 在Model 层，因此当 Joi 校验不通过时，会直接抛错，不会执行 hooks。
 - 当字段设置为 `allowNull: false` 但没有 `defaultValue` 时：
   - 如果 `create` 时未传值，`Sequelize` 会在校验阶段直接报错
   - 这种情况下不会执行 `hooks` (如 `beforeCreate`)
@@ -55,28 +56,6 @@ npx jest tests/user.test.js
   `sequelize` 在执行 `create` 时，如果有 NOT NULL 字段且没有默认值，且你没有传值，Sequelize 会在校验阶段直接报错，而不会进入 hooks。
   这是 Sequelize 的一个“坑”：
   如果你在模型定义时，某个字段 allowNull: false，但没有 defaultValue，也没有在 create 时传值，Sequelize 会先校验字段，校验不通过直接抛错，不会执行 hooks。
-
----
-
-如需补充其它模块测试或有疑问，请联系维护者。
-
----
-
-## English Summary
-
-### Unit Tests
-- All core modules are covered by unit tests in `tests/unit/`.
-- See the table above for details on files and coverage.
-- Run: `npx jest tests/unit --coverage`
-
-### Integration Tests
-- HTTP API integration tests in `tests/user.test.js` using supertest.
-- Run: `npx jest tests/user.test.js`
-
-### Notes
-- All tests can be run with `npm test` or `npx jest`.
-- Unit tests use mocks, integration tests are end-to-end.
-- Use `--coverage` for coverage report. 
 
 ---
 
@@ -100,27 +79,8 @@ npx jest tests/user.test.js
 - Jest 的 ESM 支持仍有局限，尤其是与 CommonJS-only 包混用时。
 - 目前 supertest + ESM + Jest 组合在 Node 18+ 下依然有大量未解决的兼容性问题。
 
-### 推荐替代方案（Recommended Alternatives）
-- **如需 ESM 测试环境，建议：**
-  1. 启动实际 HTTP 服务（如 `npm run start:test`），用 `undici`、`node-fetch`、`axios` 等 ESM 兼容的 HTTP 客户端进行集成测试。
-  2. 或将集成测试文件单独用 CommonJS（.cjs）语法编写，业务代码保持 ESM。
-- **如需直接传 express app 对象测试，建议保持测试为 CommonJS。**
+### 我的最佳实践（Best Practice）
+- 业务代码、单元测试可用 ESM，不用变； 同时 supertest 的优势无可替代，也必须要用。
+- 因为supertest 的在运行时要使用 express 对象，因此在 src/index.js 需要 export 导出。
+- 集成测试如需 supertest，在测试文件中只能是 `require('supertest')` ,但是同时又可以用 `import express from 'src/index.js'` 虽然别扭，但是好用，且没有更好的方法。
 
-### 最佳实践（Best Practice）
-- 业务代码、单元测试可用 ESM。
-- 集成测试如需 supertest，建议用 .cjs 文件并用 require 语法。
-- 或全部用 ESM + undici/fetch，测试已启动的 HTTP 服务。
-
----
-
-## ⚠️ supertest & ESM Incompatibility (English)
-
-- supertest is CommonJS-only, not compatible with ESM-only projects ("type": "module").
-- Using import or createRequire in ESM test files with supertest will cause `require is not defined` or `Cannot use 'import.meta' outside a module` errors.
-- Jest's ESM support is still limited when mixing with CommonJS-only packages.
-- **Recommended:**
-  - Use ESM-friendly HTTP clients (undici, node-fetch, axios) to test real HTTP endpoints.
-  - Or, write integration tests in .cjs (CommonJS) and keep business code in ESM.
-- See above for best practices and migration suggestions.
-
----

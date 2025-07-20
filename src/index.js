@@ -3,7 +3,7 @@ import path from 'path';
 // import { fileURLToPath } from 'url';
 import Joi from 'joi';
 
-import applyMiddlewares from './middlewares/index.js';
+import applyMiddlewares from './middlewares/normal.js';
 
 import DBFactory from './database/DBFactory.js';
 import staticRoutes from './routes/staticRoutes.js';
@@ -11,6 +11,7 @@ import userRoutes from './routes/userRoutes.js';
 // 未来可以继续导入其他路由模块，如 productRoutes、orderRoutes 等
 
 import dotenv from 'dotenv';
+import errorHandler from './middlewares/errorHandle.js';
 
 // const __dirname = path.dirname(__filename, fileURLToPath(import.meta.url));
 // const envFile = path.join(__dirname, `../.env.${process.env.NODE_ENV}`);
@@ -36,25 +37,8 @@ app.use('/api/users', userRoutes(dbAdapter));
 // app.use('/api/products', productRoutes(dbAdapter));
 // app.use('/api/orders', orderRoutes(dbAdapter));
 
-// FIXME: 为什么在applyMiddlewares里面不行，非要放到这里才可以？
-app.use((err, req, res, next) => {
-  console.log('错误处理自定义中间件：', err, err?.isJoi);
-  let statusCode = 500;
-  if (err.isJoi || err instanceof Joi.ValidationError) {
-    statusCode = 400;
-  } else if (err.name === 'AuthenticationError') {
-    statusCode = 401;
-  } else if (err.name === 'NotExistError') {
-    statusCode = 404;
-  }
-  
-  res.status(statusCode).json({
-    error: {
-      message: err.message,
-      ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
-    }
-  });
-});
+//! 错误处理中间件必须在所有路由之后
+app.use(errorHandler);
 
 const { SERVER_PORT = 3000 } = process.env;
 
