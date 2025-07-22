@@ -1,4 +1,4 @@
-export default class UserModel {
+export default class UserService {
   constructor(dbAdapter) {
     this.dbAdapter = dbAdapter;
   }

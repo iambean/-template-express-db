@@ -1,5 +1,5 @@
 import express from 'express';
-import UserController from '../controllers/UserController.js';
+import UserController from '../controllers/user.controller.js';
 
 export default function(dbAdapter) {
   const router = express.Router();

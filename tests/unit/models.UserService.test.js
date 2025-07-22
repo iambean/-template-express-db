@@ -1,8 +1,8 @@
-import UserModel from '../../src/models/UserModel.js';
+ import UserService from '../../src/services/user.service.js';
 
-describe('UserModel', () => {
+describe('UserService', () => {
   let dbAdapter;
-  let userModel;
+  let userService;
 
   beforeEach(() => {
     dbAdapter = {
@@ -13,29 +13,29 @@ describe('UserModel', () => {
         destroy: jest.fn().mockResolvedValue('deleted'),
       })
     };
-    userModel = new UserModel(dbAdapter);
+    userService = new UserService(dbAdapter);
   });
 
   it('should create a user', async () => {
-    const result = await userModel.create({ name: 'a' });
+    const result = await userService.create({ name: 'a' });
     expect(result).toBe('created');
     expect(dbAdapter.getModel).toHaveBeenCalledWith('User');
   });
 
   it('should read users', async () => {
-    const result = await userModel.read({});
+    const result = await userService.read({});
     expect(result).toEqual(['user1']);
     expect(dbAdapter.getModel).toHaveBeenCalledWith('User');
   });
 
   it('should update a user', async () => {
-    const result = await userModel.update(1, { name: 'b' });
+    const result = await userService.update(1, { name: 'b' });
     expect(result).toEqual(['updated']);
     expect(dbAdapter.getModel).toHaveBeenCalledWith('User');
   });
 
   it('should delete a user', async () => {
-    const result = await userModel.delete(1);
+    const result = await userService.delete(1);
     expect(result).toBe('deleted');
     expect(dbAdapter.getModel).toHaveBeenCalledWith('User');
   });

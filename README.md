@@ -22,7 +22,7 @@
 ```
 ├── src/
 │   ├── controllers/          # 控制器层
-│   │   └── UserController.js
+│   │   └── user.controller.js
 │   ├── database/            # 数据库适配器
 │   │   ├── DBAdapter.js     # 抽象基类
 │   │   ├── DBFactory.js     # 工厂类
@@ -32,9 +32,10 @@
 │   │   ├── normal.js        # 通用中间件
 │   │   └── errorHandle.js   # 错误处理中间件
 │   ├── models/              # 数据模型
-│   │   ├── User.js          # Sequelize 模型定义
-│   │   ├── UserModel.js     # 业务模型层
+│   │   ├── user.model.define.js # Sequelize 用户模型定义
 │   │   └── index.js         # 模型注册
+│   ├── services/            # 业务服务层
+│   │   └── user.service.js  # 用户相关业务逻辑
 │   ├── routes/              # 路由定义
 │   │   ├── userRoutes.js    # 用户路由
 │   │   └── staticRoutes.js  # 静态路由
@@ -49,8 +50,8 @@
 │   │   ├── database.DBAdapter.test.js
 │   │   ├── database.MySQLAdapter.test.js
 │   │   ├── database.SQLiteAdapter.test.js
-│   │   ├── models.User.test.js
-│   │   ├── models.UserModel.test.js
+│   │   ├── models.user.model.define.test.js
+│   │   ├── models.UserService.test.js
 │   │   ├── models.index.test.js
 │   │   └── utils.ResponseHelper.test.js
 │   └── integration/         # 集成测试
@@ -133,9 +134,9 @@ npm run test:integration
 | 测试文件 | 覆盖模块 | 主要测试点 |
 |----------|----------|------------|
 | utils.ResponseHelper.test.js | utils/responseHelper.js | 成功/错误响应格式、状态码设置 |
-| controllers.UserController.test.js | controllers/UserController.js | createUser/getUser/updateUser/deleteUser/listUsers，mock userModel |
-| models.User.test.js | models/User.js | 字段校验、beforeCreate 钩子、Sequelize 校验 |
-| models.UserModel.test.js | models/UserModel.js | create/read/update/delete 方法，mock dbAdapter |
+| controllers.UserController.test.js | controllers/user.controller.js | createUser/getUser/updateUser/deleteUser/listUsers，mock userService |
+| models.user.model.define.test.js | models/user.model.define.js | 字段校验、beforeCreate 钩子、Sequelize 校验 |
+| models.UserService.test.js | services/user.service.js | create/read/update/delete 方法，mock dbAdapter |
 | database.DBAdapter.test.js | database/DBAdapter.js | 抽象方法抛出异常 |
 | database.SQLiteAdapter.test.js | database/SQLiteAdapter.js | getModel、create、read、update、delete，mock models |
 | database.MySQLAdapter.test.js | database/MySQLAdapter.js | create/read/update/delete，mock sequelize.models |
@@ -240,7 +241,7 @@ DELETE /api/users/:id
 
 1. 在 `src/models/` 目录下创建 Sequelize 模型定义
 2. 在 `src/models/index.js` 中注册新模型
-3. 创建对应的 Model 类处理业务逻辑
+3. 在 `src/services/` 目录下创建对应的 Service 类处理业务逻辑
 4. 添加相应的 Controller 和路由
 5. 编写单元测试和集成测试
 
@@ -255,6 +256,6 @@ DELETE /api/users/:id
 
 欢迎提交 Issue 和 Pull Request！
 
-## 📄 许可证
+## 许可证
 
 MIT License

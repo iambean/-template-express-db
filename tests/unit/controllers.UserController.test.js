@@ -1,10 +1,10 @@
-import UserController from '../../src/controllers/UserController.js';
+import UserController from '../../src/controllers/user.controller.js';
 
 describe('UserController', () => {
-  let req, res, next, userModel, controller;
+  let req, res, next, userService, controller;
 
   beforeEach(() => {
-    userModel = {
+    userService = {
       create: jest.fn().mockResolvedValue({ id: 1 }),
       read: jest.fn().mockResolvedValue([{ id: 1, user_name: 'test' }]),
       update: jest.fn().mockResolvedValue([1]),
@@ -13,8 +13,8 @@ describe('UserController', () => {
     req = { body: {}, params: {}, query: {} };
     res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
     next = jest.fn();
-    controller = new UserController({ getModel: () => userModel });
-    controller.userModel = userModel; // 直接注入 mock
+    controller = new UserController({ getModel: () => userService });
+    controller.userService = userService;
   });
 
   it('createUser: should create user and return 201', async () => {
@@ -40,7 +40,7 @@ describe('UserController', () => {
   });
 
   it('getUser: should call next with error if not found', async () => {
-    userModel.read.mockResolvedValue([]);
+    userService.read.mockResolvedValue([]);
     req.params.id = 2;
     await controller.getUser(req, res, next);
     expect(next).toHaveBeenCalledWith(expect.objectContaining({
@@ -62,7 +62,7 @@ describe('UserController', () => {
   });
 
   it('updateUser: should call next with error if not found', async () => {
-    userModel.update.mockResolvedValue([0]);
+    userService.update.mockResolvedValue([0]);
     req.params.id = 2;
     await controller.updateUser(req, res, next);
     expect(next).toHaveBeenCalledWith(expect.objectContaining({
@@ -83,7 +83,7 @@ describe('UserController', () => {
   });
 
   it('deleteUser: should call next with error if not found', async () => {
-    userModel.delete.mockResolvedValue(0);
+    userService.delete.mockResolvedValue(0);
     req.params.id = 2;
     await controller.deleteUser(req, res, next);
     expect(next).toHaveBeenCalledWith(expect.objectContaining({
@@ -101,4 +101,4 @@ describe('UserController', () => {
       data: [{ id: 1, user_name: 'test' }]
     });
   });
-}); 
+});

@@ -15,7 +15,14 @@ function loadUsers() {
             }
             return response.json();
         })
-        .then(data => renderUsers(data))
+        .then(json => {
+            const { error, data, message } = json;
+            if(error) {
+                throw new Error(message || 'Failed to load users');
+            }else{
+                renderUsers(data);
+            }
+        })
         .catch(error => {
             console.error('Error fetching users:', error);
             alert('Failed to load users. Please try again.');

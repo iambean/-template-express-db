@@ -2,8 +2,8 @@ import { DataTypes } from 'sequelize';
 import { generateRandomId } from '../utils/index.js';
 
 
-export default (sequelize) => {
-  const User = sequelize.define('User', {
+const UserModelDefine = (sequelize) => {
+  const UserModel = sequelize.define('User', {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -53,7 +53,7 @@ export default (sequelize) => {
         let unique = false;
         while (!unique) {
           const newId = generateRandomId();
-          const existing = await User.findOne({ where: { user_id: newId } });
+          const existing = await UserModel.findOne({ where: { user_id: newId } });
           if (!existing) {
             user.user_id = newId;
             unique = true;
@@ -66,6 +66,8 @@ export default (sequelize) => {
       },
     }
   });
-  console.log('User model defined:', User);
-  return User;
+  console.log('User model defined:', UserModel);
+  return UserModel;
 };
+
+export default UserModelDefine;

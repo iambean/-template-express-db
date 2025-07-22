@@ -1,11 +1,11 @@
 import Joi from 'joi';
-import UserModel from '../models/UserModel.js';
+import UserService from '../services/user.service.js';
 import { ERROR_TYPES } from '../consts.js';
 import { ResponseHelper } from '../utils/responseHelper.js';
 
 export default class UserController {
   constructor(dbAdapter) {
-    this.userModel = new UserModel(dbAdapter);
+    this.userService = new UserService(dbAdapter);
   }
 
   async createUser(req, res, next) {
@@ -19,7 +19,7 @@ export default class UserController {
       if (error) {
         return next(error);
       } else{
-        const user = await this.userModel.create(req.body);
+        const user = await this.userService.create(req.body);
         ResponseHelper.sendSuccess(res, user, '用户创建成功', 201);
       }
     } catch (err) {
@@ -29,11 +29,11 @@ export default class UserController {
 
   async getUser(req, res, next) {
     try {
-      const user = await this.userModel.read({ id: req.params.id });
+      const user = await this.userService.read({ id: req.params.id });
       if (!user || user.length === 0) {
         const error = new Error(`你查找的 user id '${req.params.id}'不存在，请检查。`);
         error.name = ERROR_TYPES.NOT_EXIST_ERROR;
-        return next(error);
+        next(error);
       } else{
         ResponseHelper.sendSuccess(res, user[0], '查询成功');
       }
@@ -52,16 +52,16 @@ export default class UserController {
       const { error } = schema.validate(req.body);
       if (error) {
         return next(error);
-      } 
-
-      const result = await this.userModel.update(req.params.id, req.body);
-      console.log('更新结果:', result);
-      if (result[0] === 0) {
-        const error = new Error(`你查找的 user id '${req.params.id}'不存在，请检查。`);
-        error.name = ERROR_TYPES.NOT_EXIST_ERROR;
-        return next(error);
+      } else{
+        const updatedCount = await this.userService.update(req.params.id, req.body);
+        if (updatedCount[0] === 0) {
+          const error = new Error(`你查找的 user id '${req.params.id}'不存在，请检查。`);
+          error.name = ERROR_TYPES.NOT_EXIST_ERROR;
+          return next(error);
+        } else{
+          ResponseHelper.sendSuccess(res, null, '更新成功');
+        }
       }
-      ResponseHelper.sendSuccess(res, null, '更新成功');
     } catch (err) {
       return next(err);
     }
@@ -69,7 +69,7 @@ export default class UserController {
 
   async deleteUser(req, res, next) {
     try {
-      const result = await this.userModel.delete(req.params.id);
+      const result = await this.userService.delete(req.params.id);
       if (result === 0) {
         const error = new Error(`你查找的 user id '${req.params.id}'不存在，请检查。`);
         error.name = ERROR_TYPES.NOT_EXIST_ERROR;
@@ -84,7 +84,7 @@ export default class UserController {
 
   async listUsers(req, res, next) {
     try {
-      const users = await this.userModel.read({});
+      const users = await this.userService.read({});
       ResponseHelper.sendSuccess(res, users, '查询成功');
     } catch (err) {
       next(err);

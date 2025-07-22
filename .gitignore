@@ -1,7 +1,8 @@
 node_modules/
 .DS_Store
 
-# 本地SQLite数据库文件
+# 保持 db 目录，但是不保存本地SQLite数据库文件
+!db/
 db/*.sqlite
 
 # 环境变量文件, 仅保留示例文件

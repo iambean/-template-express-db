@@ -1,6 +1,5 @@
 import DBAdapter from './DBAdapter.js';
 import { Sequelize } from 'sequelize';
-// import UserModelDef from '../models/User.js'; // 导入User模型定义
 import registerModels from '../models/index.js';
 
 export default class SQLiteAdapter extends DBAdapter {
@@ -42,7 +41,6 @@ export default class SQLiteAdapter extends DBAdapter {
   async create(table, data) {
     // const model = this.sequelize.models[table];
     const model = this.models[table];
-    console.log('UserModel.create 用的 model:', model, model.options.hooks);
     return await model.create(data);
   }
 

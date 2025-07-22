@@ -6,8 +6,8 @@ import Joi from 'joi';
 import applyMiddlewares from './middlewares/normal.js';
 
 import DBFactory from './database/DBFactory.js';
-import staticRoutes from './routes/staticRoutes.js';
-import userRoutes from './routes/userRoutes.js';
+import staticRoutes from './routes/static-route.js';
+import userRoutes from './routes/user.route.js';
 // 未来可以继续导入其他路由模块，如 productRoutes、orderRoutes 等
 
 import dotenv from 'dotenv';

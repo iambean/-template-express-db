@@ -1,4 +1,4 @@
-import UserModelDef from './User.js';
+import UserModelDef from './user.model.define.js';
 // import ProductModelDef from './Product.js';
 // import OrderModelDef from './Order.js';
 
